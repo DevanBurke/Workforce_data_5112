@@ -7,7 +7,7 @@ library(here)
 library(purrr)
 library(glue)
 library(lubridate)
-
+library(ggplot2)
 
 # pull data from data.ca.gov, this may take a few minutes
 # do we need type_convert?
@@ -16,13 +16,24 @@ all_years_5112 <- readr::read_csv(url('https://data.ca.gov/dataset/e620a64f-6b86
 
 # Add year column to dataset
 with_date <- all_years_5112 %>% mutate("As Of Date"= as.Date("2020-12-31"))
-with_date 
+
+# Filtering for EPA and related BDOs 
+epa_5112 <- with_date %>% filter(Department == "Air Resources Board"|
+                    Department == "Environmental Health Hazard Assessment, Office of"|
+                    Department == "Environmental Protection Agency"|
+                    Department == "Pesticide Regulation, Department of"|
+                     Department == "Resources Recycling and Recovery, Department of"|
+                     Department == "Toxic Substances Control, Department of"|
+                     Department == "Water Resources Control Board")
+
+plot_1 <- ggplot() +
+  geom_bar(data = epa_5112, aes(Ethnicity)) +
+  coord_flip()
 
 # !!!!!!!!!!!!!!! ENTER THE RANGE OF YEARS WITH 5102 REPORTS !!!!!!!!!!!!!!!
 # IF YOU JUST WANT ONE YEAR, INPUT THAT ONE YEAR AS FIRST AND SECOND
 first_year <- 2011
 second_year <- 2011
-
 
 # creates date values
 first_date <- first_year %>% glue('-01-01')
